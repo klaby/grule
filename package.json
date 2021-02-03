@@ -18,7 +18,7 @@
   },
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "esbuild index.ts --outfile=dist/index.js --bundle",
+    "build": "esbuild index.ts --outfile=dist/index.js --bundle --platform=node --minify",
     "dev": "tsnd --respawn index.ts",
     "postbuild": "tsc -p tsconfig.json",
     "lint": "eslint . --ext .ts",
