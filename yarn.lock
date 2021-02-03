@@ -255,6 +255,11 @@
   resolved "https://registry.yarnpkg.com/@types/strip-json-comments/-/strip-json-comments-0.0.30.tgz#9aa30c04db212a9a0649d6ae6fd50accc40748a1"
   integrity sha512-7NQmHra/JILCd1QqpSzl8+mJRc8ZHz3uDm8YV1Ks9IhK0epEiTw8aIErbvH9PI+6XbqhyIQy3462nEsn7UVzjQ==
 
+"@types/type-check@^0.3.27":
+  version "0.3.27"
+  resolved "https://registry.yarnpkg.com/@types/type-check/-/type-check-0.3.27.tgz#287d060aefa6900f361ad571bea5a17f9e84ccce"
+  integrity sha1-KH0GCu+mkA82GtVxvqWhf56EzM4=
+
 "@typescript-eslint/eslint-plugin@^4.14.1":
   version "4.14.1"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/eslint-plugin/-/eslint-plugin-4.14.1.tgz#22dd301ce228aaab3416b14ead10b1db3e7d3180"
@@ -1131,6 +1136,13 @@ esutils@^2.0.2:
   resolved "https://registry.yarnpkg.com/esutils/-/esutils-2.0.3.tgz#74d2eb4de0b8da1293711910d50775b9b710ef64"
   integrity sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==
 
+expression-eval@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/expression-eval/-/expression-eval-4.0.0.tgz#d6a07c93e8b33e635710419d4a595d9208b9cc5e"
+  integrity sha512-YHSnLTyIb9IKaho2IdQbvlei/pElxnGm48UgaXJ1Fe5au95Ck0R9ftm6rHJQuKw3FguZZ4eXVllJFFFc7LX0WQ==
+  dependencies:
+    jsep "^0.3.0"
+
 fast-deep-equal@^3.1.1:
   version "3.1.3"
   resolved "https://registry.yarnpkg.com/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz#3a7d56b559d6cbc3eb512325244e619a65c6c525"
@@ -1680,6 +1692,11 @@ js-yaml@^3.13.1:
   dependencies:
     argparse "^1.0.7"
     esprima "^4.0.0"
+
+jsep@^0.3.0:
+  version "0.3.5"
+  resolved "https://registry.yarnpkg.com/jsep/-/jsep-0.3.5.tgz#3fd79ebd92f6f434e4857d5272aaeef7d948264d"
+  integrity sha512-AoRLBDc6JNnKjNcmonituEABS5bcfqDhQAWWXNTFrqu6nVXBpBAGfcoTGZMFlIrh9FjmE1CQyX9CTNwZrXMMDA==
 
 json-buffer@3.0.0:
   version "3.0.0"
@@ -2891,7 +2908,7 @@ ts-node-dev@^1.1.1:
     ts-node "^9.0.0"
     tsconfig "^7.0.0"
 
-ts-node@^9.0.0, ts-node@^9.1.1:
+ts-node@^9.0.0:
   version "9.1.1"
   resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-9.1.1.tgz#51a9a450a3e959401bda5f004a72d54b936d376d"
   integrity sha512-hPlt7ZACERQGf03M253ytLY3dHbGNGrAq9qIHWUY9XHYl1z7wYngSr3OQ5xmui8o2AaxsONxIzjafLUiWBo1Fg==

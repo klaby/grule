@@ -18,18 +18,19 @@
   },
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "esbuild lib/index.ts --outfile=dist/index.js --bundle",
-    "dev": "tsnd --respawn lib/index.ts",
+    "build": "esbuild index.ts --outfile=dist/index.js --bundle",
+    "dev": "tsnd --respawn index.ts",
     "postbuild": "tsc -p tsconfig.json",
-    "lint": "eslint . --ext .ts,.tsx",
+    "lint": "eslint . --ext .ts",
     "lint:fix": "yarn lint --fix",
-    "format": "prettier --write \"packages/**/*.{js, ts, tsx}\""
+    "format": "prettier --write \"*.{ts}\""
   },
   "license": "MIT",
   "devDependencies": {
     "@commitlint/cli": "^11.0.0",
     "@commitlint/config-conventional": "^11.0.0",
     "@types/node": "^14.14.22",
+    "@types/type-check": "^0.3.27",
     "@typescript-eslint/eslint-plugin": "^4.14.1",
     "@typescript-eslint/parser": "^4.14.1",
     "esbuild": "^0.8.36",
@@ -42,5 +43,9 @@
     "rimraf": "^3.0.2",
     "ts-node-dev": "^1.1.1",
     "typescript": "^4.1.3"
+  },
+  "dependencies": {
+    "expression-eval": "^4.0.0",
+    "type-check": "^0.4.0"
   }
 }
