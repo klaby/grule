@@ -61,10 +61,7 @@ export class Validator {
 
       return this.operator.builder(method, dataType, localValues)
     } catch (error) {
-      throw new Exception({
-        code: Validator.name,
-        message: error.message,
-      })
+      throw new Exception(Validator.name, error.message)
     }
   }
 }

@@ -1,13 +1,11 @@
-export namespace IException {
-  export type IProps = {
-    code: string
-    message: string
-  }
-}
-
 export class Exception extends Error {
-  constructor({ code, message }: IException.IProps) {
+  constructor(
+    code: string,
+    message: string,
+    metadata: Record<string, any> = {},
+  ) {
     super(message)
     this.name = code
+    Object.assign(this, { ...metadata })
   }
 }

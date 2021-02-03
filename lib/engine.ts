@@ -60,7 +60,7 @@ export class Engine {
     }
 
     if (exception) {
-      throw new Error(error.message)
+      throw error
     }
   }
 
@@ -130,7 +130,7 @@ export class Engine {
         rule.condition(this.facts)
       })
     } catch (error) {
-      throw new Exception({ code: Engine.name, message: error.message })
+      throw new Exception(Engine.name, error.message, error)
     }
   }
 }

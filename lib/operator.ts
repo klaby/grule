@@ -1,4 +1,4 @@
-import { eval, parse } from 'expression-eval'
+import { evalAsync, parse } from 'expression-eval'
 import { Exception } from './exception'
 
 export namespace IDataType {
@@ -147,12 +147,9 @@ export class Operator {
         )
       }
 
-      return eval(parse(OPERATORS[method].expression), values)
+      return evalAsync(parse(OPERATORS[method].expression), values)
     } catch (error) {
-      throw new Exception({
-        code: Operator.name,
-        message: error.message,
-      })
+      throw new Exception(Operator.name, error.message)
     }
   }
 }
