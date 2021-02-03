@@ -117,7 +117,7 @@ export class Operator {
    * @param method
    */
   public isLogicOperator(method: IOperator.IMethods): boolean {
-    return ['$in', '$notIn'].includes(method)
+    return !['$in', '$notIn'].includes(method)
   }
 
   /**
@@ -133,6 +133,21 @@ export class Operator {
     dataType: IDataType.IOptions,
   ): boolean {
     return OPERATORS[method].datatype.includes(dataType)
+  }
+
+  /**
+   * @method isValidValues
+   *
+   * @desc Checks whether the reported values are allowed in relation to the methods.
+   *
+   * @param method
+   * @param typeEquals
+   */
+  public isValidValues(
+    method: IOperator.IMethods,
+    typeEquals: boolean,
+  ): boolean {
+    return typeEquals || (this.isLogicOperator(method) && typeEquals)
   }
 
   /**
@@ -169,31 +184,10 @@ export class Operator {
    * @param type
    * @param value
    */
-  public toString<T>(type: IDataType.IOptions, value: T): string {
-    return type === 'json' ? JSON.stringify(value) : String(value)
-  }
-
-  /**
-   * @method validade
-   *
-   * @desc Validation of operators based on data types
-   */
-  public validade(): this {
-    const { values, method, data } = this.context
-
-    const typeEquals = this.typeEquals(values.$a, values.$b)
-
-    if (!this.isLogicOperator(method) && !typeEquals) {
-      throw new Error('The informed data has different types.')
-    }
-
-    if (!this.isValidMethod(method, data.type)) {
-      throw new Error(
-        `Method (${method}) not active for ${data.type} data type`,
-      )
-    }
-
-    return this
+  public toString<T>(value: T): string {
+    return this.isArrayOrJSON(this.typeCheck(value))
+      ? JSON.stringify(value)
+      : String(value)
   }
 
   /**
@@ -218,6 +212,27 @@ export class Operator {
   }
 
   /**
+   * @method validate
+   *
+   * @desc Validation of operators based on data types
+   */
+  public validate(): this {
+    const { method, data } = this.context
+
+    if (!this.isValidValues(method, data.equals)) {
+      throw new Error('The informed data has different types.')
+    }
+
+    if (!this.isValidMethod(method, data.type)) {
+      throw new Error(
+        `Method (${method}) not active for ${data.type} data type.`,
+      )
+    }
+
+    return this
+  }
+
+  /**
    * @method builder
    *
    * @desc Constructs an expression to be tested.
@@ -226,25 +241,21 @@ export class Operator {
    * @param dataType
    * @param values
    */
-  public builder(
+  public async builder(
     method: IOperator.IMethods,
     dataType: IDataType.IOptions,
     values: IDataType.IValue,
-  ): boolean {
-    try {
-      let localValues = values
+  ): Promise<boolean> {
+    let localValues = values
 
-      if (this.isArrayOrJSON(dataType) && this.isLogicOperator(method)) {
-        localValues = {
-          $a: this.toString(dataType, values.$a),
-          $b: this.toString(dataType, values.$b),
-        }
+    if (this.isArrayOrJSON(dataType) && this.isLogicOperator(method)) {
+      localValues = {
+        $a: this.toString(values.$a),
+        $b: this.toString(values.$b),
       }
-
-      return evalAsync(parse(OPERATORS[method].expression), localValues)
-    } catch (error) {
-      throw new Exception(Operator.name, error.message)
     }
+
+    return await evalAsync(parse(OPERATORS[method].expression), localValues)
   }
 
   /**
@@ -252,11 +263,11 @@ export class Operator {
    *
    * @desc Build validation expressions for implementation.
    */
-  public run(): boolean {
+  public async run(): Promise<boolean> {
     try {
       const { data, method, values } = this.context
 
-      return this.builder(method, data.type, values)
+      return await this.validate().builder(method, data.type, values)
     } catch (error) {
       throw new Exception(Operator.name, error.message)
     }
