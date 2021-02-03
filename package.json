@@ -1,5 +1,5 @@
 {
-  "name": "rules",
+  "name": "grule",
   "version": "0.0.0",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -9,12 +9,12 @@
     "url": "https://hiukky.com"
   },
   "bugs": {
-    "url": "https://github.com/hiukky/rules/issues"
+    "url": "https://github.com/hiukky/grule/issues"
   },
-  "homepage": "https://github.com/hiukky/rules#readme",
+  "homepage": "https://github.com/hiukky/grule#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/hiukky/rules"
+    "url": "https://github.com/hiukky/grule"
   },
   "scripts": {
     "prebuild": "rimraf dist",
@@ -42,7 +42,6 @@
     "eslint-plugin-import": "^2.22.1",
     "husky": "^4.3.8",
     "jest": "^26.6.3",
-    "nodemon": "^2.0.7",
     "prettier": "^2.2.1",
     "rimraf": "^3.0.2",
     "ts-jest": "^26.5.0",
@@ -55,5 +54,13 @@
   },
   "files": [
     "dist"
+  ],
+  "keywords": [
+    "grule",
+    "rules",
+    "engine",
+    "policy",
+    "requirement",
+    "validation"
   ]
 }
