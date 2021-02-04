@@ -1,106 +1,272 @@
 import { Exception } from './exception'
 
+export namespace IOperator {
+  export type ILogic =
+    | '$less'
+    | '$lessOrEqual'
+    | '$greater'
+    | '$greaterOrEqual'
+    | '$equal'
+    | '$diff'
+
+  export type IModifier = '$in' | '$notIn'
+  export type IOptions = ILogic | IModifier
+
+  export type ILess = number
+  export type IGreater = number
+  export type IEqual = number | boolean | string
+  export type In = string | [] | Record<string, any>
+  export type Idle = unknown | any
+
+  export type IEval = {
+    result: boolean
+    method: IOptions
+    values: { a: any; b: any }
+  }
+
+  export type IMethodsLogic = {
+    [k in ILogic]: <A>(a: A, b: A) => IEval
+  }
+
+  export type IMethodsModifier = {
+    [k in IModifier]: <A, B>(a: A, b: B) => IEval
+  }
+
+  export type IMethods = IMethodsLogic & IMethodsModifier
+}
+
+export namespace IDataType {
+  export type IOptions =
+    | 'string'
+    | 'number'
+    | 'bigint'
+    | 'boolean'
+    | 'symbol'
+    | 'undefined'
+    | 'object'
+    | 'function'
+}
+
+export namespace IEvents {
+  export type IOptions = '$throw' | '$done'
+
+  export type ISchema = {
+    condition: IOperator.IEval
+    event?: Function
+  }
+
+  export type IMethods = {
+    $throw: (message: string) => Function
+    $when: (condition: IOperator.IEval, event?: Function) => ISchema
+  }
+}
+
 export namespace IEngine {
-  export type IRuleMeta<M> = {
-    condition(metadata: M): void
-    consequence(): Partial<{ message: string }>
-  }
+  export type IRulesSchema<T> = Record<keyof T, IEvents.ISchema>
 
-  export type IRule<R = any> = Record<keyof R, IRuleMeta<R>>
+  export type IRules<T> = (
+    metadata: T,
+    events: IEvents.IMethods,
+    operators: IOperator.IMethods,
+  ) => IRulesSchema<T>
 
-  export type IFact<F = any> = F
+  export type IFacts<T> = T
 
-  export type IError = Record<'message' | 'attribute' | 'value', string>
+  export type IContextStatus = 'success' | 'failed'
 
-  export type IStatus = 'completed' | 'failed'
-
-  export type IOptions = {
-    throwError: boolean
-  }
-
-  export type IContext = {
-    fact: Partial<Record<'key' | 'value', any>>
-    consequence: Partial<{ message: string }>
+  export type IContext<R> = {
+    [k in keyof R]: {
+      status: IContextStatus
+      method: IOperator.IOptions | null
+      values: {
+        expected: any
+        sended: any
+      }
+      event?: Function
+    }
   }
 }
 
 export class Engine {
-  public errors: IEngine.IError[] = []
+  private rules: IEngine.IRulesSchema<any>
 
-  protected rules: IEngine.IRule = {}
-  protected facts: IEngine.IFact = {}
-  protected context: IEngine.IContext = { fact: {}, consequence: {} }
+  public status: IEngine.IContextStatus
+  public context: IEngine.IContext<any>
 
-  private options: IEngine.IOptions = {
-    throwError: true,
+  constructor() {
+    this.rules = {}
+    this.status = 'success'
+    this.context = {}
   }
 
   /**
-   * @function error
+   * @method operators
    *
-   * @desc Generates a payload with failed validations.
-   *
-   * @param message
-   * @param exception
+   * @desc Operators.
    */
-  private error(message?: string, exception = false) {
-    const { fact, consequence } = this.context
-
-    const error: IEngine.IError = {
-      message: message || consequence.message || 'Validation failed.',
-      attribute: fact.key,
-      value: fact.value,
-    }
-
-    if (this.errors.length) {
-      const index = this.errors.map(e => e.attribute).indexOf(error.attribute)
-      this.errors.splice(index, 1, error)
-    } else {
-      this.errors.push(error)
-    }
-
-    if (exception) {
-      throw error
+  private get operators(): IOperator.IMethods {
+    return {
+      $less: <V = IOperator.ILess>(a: V, b: V) => {
+        return this.eval('$less', a < b, { a, b })
+      },
+      $lessOrEqual: <V = IOperator.ILess>(a: V, b: V) => {
+        return this.eval('$lessOrEqual', a <= b, { a, b })
+      },
+      $greater: <V = IOperator.IGreater>(a: V, b: V) => {
+        return this.eval('$greater', a > b, { a, b })
+      },
+      $greaterOrEqual: <V = IOperator.IGreater>(a: V, b: V) => {
+        return this.eval('$greaterOrEqual', a > b, { a, b })
+      },
+      $equal: <V = IOperator.IEqual>(a: V, b: V) => {
+        return this.eval('$equal', a === b, { a, b })
+      },
+      $diff: <V = IOperator.IEqual>(a: V, b: V) => {
+        return this.eval('$diff', a !== b, { a, b })
+      },
+      $in: <V = IOperator.In>(a: V, b: IOperator.Idle) => {
+        return this.eval('$in', (a as IOperator.Idle).includes(b), { a, b })
+      },
+      $notIn: <V = IOperator.In>(a: V, b: IOperator.Idle) => {
+        return this.eval('$notIn', !(a as IOperator.Idle).includes(b), { a, b })
+      },
     }
   }
 
   /**
-   * @method status
+   * @method events
    *
-   * @desc Retorna o status da validação.
+   * @desc Events.
    */
-  public get status(): IEngine.IStatus {
-    return !this.errors.length ? 'completed' : 'failed'
+  private get events(): IEvents.IMethods {
+    return {
+      $when: (evaluation, event) => {
+        return { condition: evaluation, event }
+      },
+      $throw: message => (): never => {
+        throw new Exception(Engine.name, message)
+      },
+    }
   }
 
   /**
-   * @method when
+   * @method typeEquals
    *
-   * @desc Do something according to the condition.
+   * @desc Check data type.
    *
-   * @param condition
+   * @param options
+   * @param value
    */
-  public when(condition: boolean): this {
-    const { throwError } = this.options
-
-    if (!condition) {
-      this.error('', throwError)
+  private typeEquals<V>(
+    options: IDataType.IOptions[],
+    value: Record<'a' | 'b', V>,
+  ): boolean {
+    const types = {
+      a: typeof value.a,
+      b: typeof value.b,
     }
 
-    return this
+    return types.a !== types.b
+      ? false
+      : Object.values(types).every(type => options.includes(type))
+  }
+
+  /**
+   * @method validate
+   *
+   * @desc Validates data entered for each operator call.
+   *
+   * @param method
+   * @param values
+   */
+  private validate<V>(method: IOperator.IOptions, values: Record<'a' | 'b', V>): boolean {
+    const check = (types: IDataType.IOptions[]): boolean => {
+      const equals = this.typeEquals(types, values)
+
+      if (!equals && !['$in', '$notIn'].includes(method)) {
+        throw new Error(`Method "${method}" expects data type "${types.toString()}."`)
+      }
+
+      return true
+    }
+
+    switch (method) {
+      case '$less':
+      case '$lessOrEqual':
+      case '$greater':
+      case '$greaterOrEqual':
+        return check(['number', 'bigint'])
+
+      case '$equal':
+      case '$diff':
+        return check(['bigint', 'boolean', 'number', 'string'])
+
+      case '$in':
+      case '$notIn':
+        return check(['string', 'object'])
+
+      default:
+        return true
+    }
+  }
+
+  /**
+   * @method eval
+   *
+   * @desc Evaluate operations.
+   *
+   * @param method
+   * @param result
+   * @param values
+   */
+  private eval<V>(
+    method: IOperator.IOptions,
+    result: boolean,
+    values: Record<'a' | 'b', V>,
+  ): IOperator.IEval {
+    this.validate(method, values)
+
+    return {
+      result,
+      method,
+      values,
+    }
+  }
+
+  /**
+   * @method updateStats
+   *
+   * @desc Checks the final status of tests if no errors are thrown.
+   */
+  private updateStats(): void {
+    this.status = Object.keys(this.context).some(
+      attribute => this.context[attribute].status === 'failed',
+    )
+      ? 'failed'
+      : 'success'
   }
 
   /**
    * @method subscribe
    *
-   * @desc Register rules and facts.
+   * @desc Register rules.
    *
    * @param rules
    * @param facts
    */
-  public subscribe<M>(rules: IEngine.IRule<M>, facts: IEngine.IFact<M>): this {
-    this.rules = { ...rules }
-    this.facts = { ...facts }
+  subscribe<M>(rules: IEngine.IRules<M>, facts: IEngine.IFacts<M>): this {
+    this.rules = rules(facts, this.events, this.operators)
+
+    Object.keys(this.rules).forEach(attribute => {
+      const { condition, event } = this.rules[attribute]
+
+      this.context[attribute] = {
+        method: condition.method,
+        status: !condition.result ? 'success' : 'failed',
+        values: { sended: condition.values.a, expected: condition.values.b },
+        event,
+      }
+    })
 
     return this
   }
@@ -109,28 +275,22 @@ export class Engine {
    * @method run
    *
    * @desc Run rule tests.
-   *
-   * @param options
    */
-  public run(options?: Partial<IEngine.IOptions>): void {
-    try {
-      this.options = { ...this.options, ...options }
+  run(): this {
+    Object.keys(this.context).forEach(attribute => {
+      const { event, ...context } = this.context[attribute]
 
-      if (!Object.keys(this.facts).length) return
-
-      Object.entries(this.rules).forEach(([key, rule]) => {
-        const value = this.facts[key] || null
-
-        this.context = { fact: { key, value }, consequence: rule.consequence() }
-
-        if (!value) {
-          this.error(`Attribute (${key}) not informed.`, true)
+      if (context.status === 'failed' && typeof event === 'function') {
+        try {
+          event()
+        } catch (error) {
+          throw { ...context, error }
         }
+      }
+    })
 
-        rule.condition(this.facts)
-      })
-    } catch (error) {
-      throw new Exception(Engine.name, error.message, error)
-    }
+    this.updateStats()
+
+    return this
   }
 }
