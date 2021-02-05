@@ -1,4 +1,4 @@
-import { Engine, IEngine } from '../lib/engine'
+import { Engine, IEngine, $when, $diff } from '../'
 
 type IUser = {
   id: number
@@ -7,7 +7,7 @@ type IUser = {
 
 const engine = new Engine()
 
-const rules: IEngine.IRules<IUser> = ({ id, gender }, { $when }, { $diff }) => ({
+const rules: IEngine.IRules<IUser> = ({ id, gender }) => ({
   id: $when($diff(id, 1)),
   gender: $when($diff(gender, 'female')),
 })

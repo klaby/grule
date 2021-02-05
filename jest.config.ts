@@ -2,7 +2,7 @@ module.exports = {
   preset: 'ts-jest',
   rootDir: '.',
   testEnvironment: 'node',
-  collectCoverageFrom: ['**/lib/**', '!jest.config.ts'],
+  collectCoverageFrom: ['**/lib/**', '**/src/**', '!jest.config.ts'],
   coverageDirectory: './coverage',
-  modulePathIgnorePatterns: ['<rootDir>/dist/'],
+  modulePathIgnorePatterns: ['<rootDir>/dist/', '<rootDir>/samples/'],
 }
