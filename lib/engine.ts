@@ -1,4 +1,4 @@
-import { IEngine } from '../src/interfaces'
+import { Idle, IEngine, IOperator } from '../src/interfaces'
 import { validateValuesPerOperator } from '../src/validator'
 
 export class Engine {
@@ -52,6 +52,21 @@ export class Engine {
   }
 
   /**
+   * @method validate
+   * @desc Perform operator validation based on values.
+   * @param operator
+   * @param values
+   */
+  public validate(
+    operator: IOperator.IOptions,
+    values: Record<'a' | 'b', Idle>,
+  ): this {
+    validateValuesPerOperator(operator, values)
+
+    return this
+  }
+
+  /**
    * @method run
    * @desc Run rule tests.
    */
@@ -59,7 +74,7 @@ export class Engine {
     Object.keys(this.context).forEach(attribute => {
       const { event, ...context } = this.context[attribute]
 
-      validateValuesPerOperator(context.method, {
+      this.validate(context.method, {
         a: context.values.sended,
         b: context.values.expected,
       })
