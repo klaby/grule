@@ -5,14 +5,6 @@ import { Idle, IOperator } from './interfaces'
 import { getDataTypes, typeCheck } from './helpers'
 
 /**
- * @function isValidOperator
- * @desc Validates data entered for each operator call.
- * @param operator
- */
-export const isValidOperator = (operator: IOperator.IOptions): boolean =>
-  OPERATORS.includes(operator)
-
-/**
  * @function validateValuesPerOperator
  * @desc Validates the data reported for each operator.
  * @param operator
@@ -22,7 +14,7 @@ export const validateValuesPerOperator = (
   operator: IOperator.IOptions,
   values: Record<'a' | 'b', Idle>,
 ): boolean => {
-  if (!isValidOperator(operator)) {
+  if (!OPERATORS.includes(operator)) {
     throw new Error(`Allowed operators "${OPERATORS.toString()}".`)
   }
 
