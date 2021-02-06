@@ -13,6 +13,6 @@ export const OPERATORS: IOperator.IOptions[] = [
 
 export const OPERATORS_DATATYPES: IDataType.IOperator = {
   '$less:$lessOrEqual:$greater:$greaterOrEqual': ['number', 'bigint'],
-  '$equal:$diff': ['bigint', 'boolean', 'number', 'string'],
-  '$in:$notIn': ['string', 'object'],
+  '$equal:$diff': ['bigint', 'boolean', 'number', 'string', 'date'],
+  '$in:$notIn': ['string', 'array'],
 }

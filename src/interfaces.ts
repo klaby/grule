@@ -1,3 +1,6 @@
+import { IDataTypes } from 'chork'
+
+export type Idle = unknown | any
 export namespace IOperator {
   export type ILogic =
     | '$less'
@@ -18,12 +21,11 @@ export namespace IOperator {
   export type IGreater = number
   export type IEqual = number | boolean | string
   export type In = string | [] | Record<string, any>
-  export type Idle = unknown | any
 
   export type IBuilder = {
     result: boolean
     method: IOptions
-    values: { a: any; b: any }
+    values: { a: Idle; b: Idle }
   }
 
   export type IMethodsLogic = {
@@ -38,28 +40,18 @@ export namespace IOperator {
 }
 
 export namespace IDataType {
-  export type IOptions =
-    | 'string'
-    | 'number'
-    | 'bigint'
-    | 'boolean'
-    | 'symbol'
-    | 'undefined'
-    | 'object'
-    | 'function'
-
   export type ISchemaCheck = {
     checked: boolean
     equals: boolean
-    types: Record<'a' | 'b', IOptions>
+    types: Record<'a' | 'b', IDataTypes>
   }
 
   export type ISchemaOptions = {
     key: IOperator.IDataSchemaKey
-    types: IOptions[]
+    types: IDataTypes[]
   }
 
-  export type IOperator = Record<IOperator.IDataSchemaKey, IOptions[]>
+  export type IOperator = Record<IOperator.IDataSchemaKey, IDataTypes[]>
 }
 
 export namespace IEvents {
@@ -79,9 +71,9 @@ export namespace IEvents {
 export namespace IEngine {
   export type IRulesSchema<T> = Record<keyof T, IEvents.ISchema>
 
-  export type IRules<T = any> = (metadata: T) => IRulesSchema<T>
+  export type IRules<T extends Idle> = (metadata: T) => IRulesSchema<T>
 
-  export type IFacts<T = any> = T
+  export type IFacts<T extends Idle> = T
 
   export type IContextStatus = 'success' | 'failed'
 
@@ -90,8 +82,8 @@ export namespace IEngine {
       status: IContextStatus
       method: IOperator.IOptions
       values: {
-        expected: any
-        sended: any
+        expected: Idle
+        sended: Idle
       }
       event?: Function
     }

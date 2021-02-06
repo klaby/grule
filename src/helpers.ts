@@ -1,20 +1,21 @@
 import { IOperator } from './interfaces'
 import { OPERATORS_DATATYPES } from './constants'
 import { IDataType } from './interfaces'
+import { check, IDataTypes } from 'chork'
 
 /**
  * @method typeCheck
  * @desc Check data type.
  * @param options
- * @param value
+ * @param values
  */
 export const typeCheck = <V>(
-  options: IDataType.IOptions[],
-  value: Record<'a' | 'b', V>,
+  options: IDataTypes[],
+  values: Record<'a' | 'b', V>,
 ): IDataType.ISchemaCheck => {
-  const types = {
-    a: typeof value.a,
-    b: typeof value.b,
+  const types: Record<'a' | 'b', IDataTypes> = {
+    a: check(values.a),
+    b: check(values.b),
   }
 
   const checked = Object.values(types).every(type => options.includes(type))

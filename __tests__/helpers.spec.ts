@@ -1,9 +1,9 @@
-import { IDataType } from '../src/interfaces'
+import { IDataTypes } from 'chork'
 import { typeCheck } from '../src/helpers'
 
 describe('Helpers', () => {
   describe("['number', 'bigint']", () => {
-    const types: IDataType.IOptions[] = ['bigint', 'number']
+    const types: IDataTypes[] = ['bigint', 'number']
 
     it('should return true to a=1 and b=5', () => {
       expect(typeCheck(types, { a: 1, b: 5 })).toEqual({
@@ -23,12 +23,7 @@ describe('Helpers', () => {
   })
 
   describe("['bigint', 'boolean', 'number', 'string']", () => {
-    const types: IDataType.IOptions[] = [
-      'bigint',
-      'boolean',
-      'number',
-      'string',
-    ]
+    const types: IDataTypes[] = ['bigint', 'boolean', 'number', 'string']
 
     it('should return true to a=1 and b=5', () => {
       expect(typeCheck(types, { a: 1, b: 5 })).toEqual({
@@ -58,7 +53,7 @@ describe('Helpers', () => {
       expect(typeCheck(types, { a: [], b: [] })).toEqual({
         checked: false,
         equals: true,
-        types: { a: 'object', b: 'object' },
+        types: { a: 'array', b: 'array' },
       })
     })
 
@@ -72,7 +67,7 @@ describe('Helpers', () => {
   })
 
   describe("['string', 'object']", () => {
-    const types: IDataType.IOptions[] = ['string', 'object']
+    const types: IDataTypes[] = ['string', 'array']
 
     it('should return true to a="foo" and b="foo"', () => {
       expect(typeCheck(types, { a: 'foo', b: 'foo' })).toEqual({
@@ -86,13 +81,13 @@ describe('Helpers', () => {
       expect(typeCheck(types, { a: [1], b: ['foo'] })).toEqual({
         checked: true,
         equals: true,
-        types: { a: 'object', b: 'object' },
+        types: { a: 'array', b: 'array' },
       })
     })
 
     it('must return true to a={a:1} and b={a:1}', () => {
       expect(typeCheck(types, { a: { a: 1 }, b: { a: 1 } })).toEqual({
-        checked: true,
+        checked: false,
         equals: true,
         types: { a: 'object', b: 'object' },
       })

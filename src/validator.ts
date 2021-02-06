@@ -1,6 +1,6 @@
 import { OPERATORS, OPERATORS_DATATYPES } from './constants'
 
-import { IOperator } from './interfaces'
+import { Idle, IOperator } from './interfaces'
 
 import { getDataTypes, typeCheck } from './helpers'
 
@@ -20,7 +20,7 @@ export const isValidOperator = (operator: IOperator.IOptions): boolean =>
  */
 export const validateValuesPerOperator = (
   operator: IOperator.IOptions,
-  values: Record<'a' | 'b', IOperator.Idle>,
+  values: Record<'a' | 'b', Idle>,
 ): boolean => {
   if (!isValidOperator(operator)) {
     throw new Error(`Allowed operators "${OPERATORS.toString()}".`)
@@ -39,7 +39,9 @@ export const validateValuesPerOperator = (
 
       return true
     case '$equal:$diff':
-      if (Object.values(result.types).includes('object')) {
+      const blacklist = ['array', 'object']
+
+      if (Object.values(result.types).some(v => blacklist.includes(v))) {
         throw new Error(
           `Operator "${operator}" expects data type "${schema.types}".`,
         )

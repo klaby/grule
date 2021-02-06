@@ -1,4 +1,4 @@
-import { IOperator } from './interfaces'
+import { Idle, IOperator } from './interfaces'
 
 /**
  * @function $less
@@ -98,7 +98,7 @@ export const $in = <A = IOperator.In>(
   b: IOperator.IEqual,
 ): IOperator.IBuilder => ({
   method: '$in',
-  result: (a as IOperator.Idle).includes(b),
+  result: (a as Idle).includes(b),
   values: { a, b },
 })
 
@@ -113,6 +113,6 @@ export const $notIn = <A = IOperator.In>(
   b: IOperator.IEqual,
 ): IOperator.IBuilder => ({
   method: '$notIn',
-  result: !(a as IOperator.Idle).includes(b),
+  result: !(a as Idle).includes(b),
   values: { a, b },
 })

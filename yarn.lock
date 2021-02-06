@@ -1362,6 +1362,11 @@ chokidar@^3.4.0:
   optionalDependencies:
     fsevents "~2.3.1"
 
+chork@^0.1.0-alpha.2:
+  version "0.1.0-alpha.2"
+  resolved "https://registry.yarnpkg.com/chork/-/chork-0.1.0-alpha.2.tgz#83539112fad503e1445ff707cf7a001526703494"
+  integrity sha512-3Hs+vZxGKPKje/sYlbhCfb8rTtuLRxlEVM6hBukBLkNLXJY8wqtXwlLfzG5qKL2P2bp7XBu0txzXZLO9hoxZuQ==
+
 ci-info@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ci-info/-/ci-info-2.0.0.tgz#67a9e964be31a51e15e5010d58e6f12834002f46"
@@ -1821,10 +1826,10 @@ es-to-primitive@^1.2.1:
     is-date-object "^1.0.1"
     is-symbol "^1.0.2"
 
-esbuild@^0.8.40:
-  version "0.8.40"
-  resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.8.40.tgz#2ca457d950b27c77f28010f4482bdb820560290f"
-  integrity sha512-IP0GcO3K9yO9rM69AMtx9tmjUYFO7oCcRfURCV4KveL3HQnQA1SJ8YLM71EyFe67+7At6HJIyjkOjGO3xnUQ/g==
+esbuild@^0.8.42:
+  version "0.8.42"
+  resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.8.42.tgz#26101cf17fe4c4602c7c767e3177cf0c538073ac"
+  integrity sha512-zUtj5RMqROCCCH0vV/a7cd8YQg8I0GWBhV3A3PklWRT+oM/YwVbnrtFnITzE1otGdnXplWHWdZ4OcYiV0PN+JQ==
 
 escape-string-regexp@^1.0.5:
   version "1.0.5"

@@ -90,7 +90,15 @@ describe('Validator', () => {
       expect(() =>
         validateValuesPerOperator('$equal', { a: [true], b: [1, 2] }),
       ).toThrow(
-        'Operator "$equal" expects data type "bigint,boolean,number,string".',
+        'Operator "$equal" expects data type "bigint,boolean,number,string,date".',
+      )
+    })
+
+    it('must return error to a={a:1} and b={a:1}', () => {
+      expect(() =>
+        validateValuesPerOperator('$equal', { a: { a: 1 }, b: { a: 1 } }),
+      ).toThrow(
+        'Operator "$equal" expects data type "bigint,boolean,number,string,date".',
       )
     })
 
@@ -98,7 +106,7 @@ describe('Validator', () => {
       expect(() =>
         validateValuesPerOperator('$equal', { a: { a: 1 }, b: [true] }),
       ).toThrow(
-        'Operator "$equal" expects data type "bigint,boolean,number,string".',
+        'Operator "$equal" expects data type "bigint,boolean,number,string,date".',
       )
     })
   })
@@ -124,7 +132,7 @@ describe('Validator', () => {
       expect(() =>
         validateValuesPerOperator('$diff', { a: [true], b: [1, 2] }),
       ).toThrow(
-        'Operator "$diff" expects data type "bigint,boolean,number,string".',
+        'Operator "$diff" expects data type "bigint,boolean,number,string,date".',
       )
     })
 
@@ -132,7 +140,7 @@ describe('Validator', () => {
       expect(() =>
         validateValuesPerOperator('$diff', { a: { a: 1 }, b: [true] }),
       ).toThrow(
-        'Operator "$diff" expects data type "bigint,boolean,number,string".',
+        'Operator "$diff" expects data type "bigint,boolean,number,string,date".',
       )
     })
   })
@@ -150,29 +158,29 @@ describe('Validator', () => {
       )
     })
 
-    it('must return true to a={a:1} and b="a"', () => {
-      expect(validateValuesPerOperator('$in', { a: { a: 1 }, b: 'a' })).toBe(
-        true,
-      )
+    it('must return error to a={a:1} and b="a"', () => {
+      expect(() =>
+        validateValuesPerOperator('$in', { a: { a: 1 }, b: 'a' }),
+      ).toThrow('Operator "$in" expects data type "string,array"')
     })
 
     it('must return error to a=1 and b=50', () => {
       expect(() => validateValuesPerOperator('$in', { a: 1, b: 50 })).toThrow(
-        'Operator "$in" expects data type "string,object".',
+        'Operator "$in" expects data type "string,array".',
       )
     })
 
     it('must return error to a=true and b=false', () => {
       expect(() =>
         validateValuesPerOperator('$in', { a: true, b: false }),
-      ).toThrow('Operator "$in" expects data type "string,object".')
+      ).toThrow('Operator "$in" expects data type "string,array".')
     })
 
     it('must return error to a=[true] and b=false', () => {
       expect(() =>
         validateValuesPerOperator('$in', { a: [false], b: [false] }),
       ).toThrow(
-        'Operator "$in" expects a second argument of "bigint,boolean,number,string".',
+        'Operator "$in" expects a second argument of "bigint,boolean,number,string,date".',
       )
     })
   })
@@ -193,21 +201,19 @@ describe('Validator', () => {
     it('must return error to a={a:1} and b={a:1}', () => {
       expect(() =>
         validateValuesPerOperator('$notIn', { a: { a: 1 }, b: { a: 1 } }),
-      ).toThrow(
-        'Operator "$notIn" expects a second argument of "bigint,boolean,number,string".',
-      )
+      ).toThrow('Operator "$notIn" expects data type "string,array".')
     })
 
     it('must return error to a=1 and b=50', () => {
       expect(() =>
         validateValuesPerOperator('$notIn', { a: 1, b: 50 }),
-      ).toThrow('Operator "$notIn" expects data type "string,object".')
+      ).toThrow('Operator "$notIn" expects data type "string,array".')
     })
 
     it('must return error to a=true and b=false', () => {
       expect(() =>
         validateValuesPerOperator('$notIn', { a: true, b: false }),
-      ).toThrow('Operator "$notIn" expects data type "string,object".')
+      ).toThrow('Operator "$notIn" expects data type "string,array".')
     })
   })
 })
