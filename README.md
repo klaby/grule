@@ -25,6 +25,12 @@
 
 <div align="center">
   <a href="https://www.npmjs.com/package/grule">
+   <img alt="npm bundle size" src="https://img.shields.io/bundlephobia/minzip/grule?color=1F2630&style=for-the-badge&colorA=1F2630&label=size">
+  </a>
+</div>
+
+<div align="center">
+  <a href="https://www.npmjs.com/package/grule">
     <img alt="NPM" src="https://img.shields.io/npm/dt/grule?color=1F2630&style=for-the-badge&colorA=1F2630" />
   </a>
 </div>
@@ -232,7 +238,7 @@ To set up your rules scheme, just follow the steps below.
 
 # Contributing
 
-Chork is in an initial version without many features yet, but you can feel free to send your suggestion or open a PR.
+Grule is in an initial version without many features yet, but you can feel free to send your suggestion or open a PR.
 
 <br>
 
@@ -245,7 +251,7 @@ Chork is in an initial version without many features yet, but you can feel free 
 <br>
 
 <div align="center">
-<a href="https://github.com/hiukky/chork/blob/master/LICENSE">
- <img alt="GitHub license" src="https://img.shields.io/github/license/hiukky/chork?color=1F2630&style=for-the-badge&colorA=1F2630" />
+<a href="https://github.com/hiukky/grule/blob/master/LICENSE">
+ <img alt="GitHub license" src="https://img.shields.io/github/license/hiukky/grule?color=1F2630&style=for-the-badge&colorA=1F2630" />
 </a>
 </div>
