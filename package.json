@@ -52,6 +52,13 @@
   "dependencies": {
     "chork": "^0.1.0-alpha.5"
   },
+  "size-limit": [
+    {
+      "path": "dist/index.js",
+      "import": "{ createStore }",
+      "limit": "500 ms"
+    }
+  ],
   "files": [
     "dist"
   ],
