@@ -20,7 +20,9 @@ export const typeCheck = <V>(
   values: Record<'a' | 'b', V>,
 ): IDataTypesSchema => {
   const types: Record<'a' | 'b', IDataTypes> = checkAll(values)
-  const checked = Object.values(types).every(type => options?.includes(type))
+  const checked = Object.values(types).every(
+    type => options && options.includes(type),
+  )
   const equals = types.a === types.b
 
   return { checked, equals, types }
