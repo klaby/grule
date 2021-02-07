@@ -1,6 +1,7 @@
 {
   "name": "grule",
-  "version": "0.1.0-alpha.2",
+  "version": "0.1.0-alpha.6",
+  "description": "A simple and powerful mechanism for validating rules in JSON.",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "author": {
