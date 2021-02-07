@@ -1362,10 +1362,10 @@ chokidar@^3.4.0:
   optionalDependencies:
     fsevents "~2.3.1"
 
-chork@^0.1.0-alpha.2:
-  version "0.1.0-alpha.2"
-  resolved "https://registry.yarnpkg.com/chork/-/chork-0.1.0-alpha.2.tgz#83539112fad503e1445ff707cf7a001526703494"
-  integrity sha512-3Hs+vZxGKPKje/sYlbhCfb8rTtuLRxlEVM6hBukBLkNLXJY8wqtXwlLfzG5qKL2P2bp7XBu0txzXZLO9hoxZuQ==
+chork@^0.1.0-alpha.5:
+  version "0.1.0-alpha.5"
+  resolved "https://registry.yarnpkg.com/chork/-/chork-0.1.0-alpha.5.tgz#bcdeba258b91a417b604cd3a224c310c37cfaf38"
+  integrity sha512-5gQfAcTa8fyEOxGQe7BbMmxowndVAzjGBJMoT8y13P7fxAhWCHdQtQmXKbt8gT89puG15LwU/amJykQdfyRn0g==
 
 ci-info@^2.0.0:
   version "2.0.0"

@@ -1,24 +1,26 @@
-import { IOperator } from './interfaces'
-import { OPERATORS_DATATYPES } from './constants'
-import { IDataType } from './interfaces'
-import { check, IDataTypes } from 'chork'
+import { checkAll, IDataTypes } from 'chork'
+import {
+  IDataTypesSchema,
+  IOperatorsSchema,
+  IOperatorsSchemaKeys,
+  IOperatorsList,
+} from '../src/interfaces'
+import { OPERATORS_DATATYPES } from '../src/constants'
 
 /**
  * @method typeCheck
+ *
  * @desc Check data type.
+ *
  * @param options
  * @param values
  */
 export const typeCheck = <V>(
   options: IDataTypes[],
   values: Record<'a' | 'b', V>,
-): IDataType.ISchemaCheck => {
-  const types: Record<'a' | 'b', IDataTypes> = {
-    a: check(values.a),
-    b: check(values.b),
-  }
-
-  const checked = Object.values(types).every(type => options.includes(type))
+): IDataTypesSchema => {
+  const types: Record<'a' | 'b', IDataTypes> = checkAll(values)
+  const checked = Object.values(types).every(type => options?.includes(type))
   const equals = types.a === types.b
 
   return { checked, equals, types }
@@ -26,15 +28,15 @@ export const typeCheck = <V>(
 
 /**
  * @function getDataTypes
- * @desc Returns a schema of data accepted by an operator
+ *
+ * @desc Returns a schema of data accepted by an operator.
+ *
  * @param operator
  */
-export const getDataTypes = (
-  operator: IOperator.IOptions,
-): IDataType.ISchemaOptions => {
-  const [key] = Object.keys(OPERATORS_DATATYPES).filter(o =>
-    o.includes(operator),
-  ) as IOperator.IDataSchemaKey[]
+export const getDataTypes = (operator: IOperatorsList): IOperatorsSchema => {
+  const [key] = Object.keys(OPERATORS_DATATYPES).filter(schema =>
+    schema.includes(operator),
+  ) as IOperatorsSchemaKeys[]
 
   return {
     key,

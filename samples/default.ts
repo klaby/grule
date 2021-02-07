@@ -1,20 +1,18 @@
-import { Engine, IEngine, $when, $diff } from '../'
+import { Engine } from '../lib/engine'
+import { IRules } from '../src/interfaces'
 
 type IUser = {
   id: number
   gender: 'male' | 'female'
 }
 
-const engine = new Engine()
+const engine = new Engine<IUser>({ id: 1, gender: 'male' })
 
-const rules: IEngine.IRules<IUser> = ({ id, gender }) => ({
-  id: $when($diff(id, 1)),
-  gender: $when($diff(gender, 'female')),
+const rules: IRules<IUser> = ({ id, gender }, { when }) => ({
+  id: when(id.greater(1)).then(() => {
+    throw new Error('Validation failed to "id".')
+  }),
+  gender: gender.in(['female']),
 })
 
-const facts: IEngine.IFacts<IUser> = {
-  id: 1,
-  gender: 'male',
-}
-
-engine.subscribe(rules, facts).run()
+engine.subscribe(rules).run()

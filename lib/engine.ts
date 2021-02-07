@@ -1,95 +1,110 @@
-import { Idle, IEngine, IOperator } from '../src/interfaces'
-import { validateValuesPerOperator } from '../src/validator'
+import {
+  IContext,
+  IRules,
+  Idle,
+  IRulesContext,
+  IOperators,
+} from '../src/interfaces'
+import { Validator } from './validator'
+import { Event } from './event'
+import { Exception } from './exception'
 
-export class Engine {
-  private rules: IEngine.IRulesSchema<any>
+export class Engine<T> {
+  private metadata: T
+  private rules: IRulesContext<T> = {} as IRulesContext<T>
+  private context: IContext<T> = {} as IContext<T>
+  private validator: Validator
 
-  public status: IEngine.IContextStatus
-  public context: IEngine.IContext<any>
-
-  constructor() {
-    this.rules = {}
-    this.status = 'success'
-    this.context = {}
+  constructor(metadata: T) {
+    this.metadata = metadata
+    this.validator = new Validator()
   }
 
   /**
-   * @method updateStats
-   * @desc Checks the final status of tests if no errors are thrown.
+   * @method createOperatorsFor
+   *
+   * @desc Create a schema of operators for each mapped attribute.
+   *
+   * @param a
    */
-  private updateStats(): void {
-    this.status = Object.keys(this.context).some(
-      attribute => this.context[attribute].status === 'failed',
-    )
-      ? 'failed'
-      : 'success'
+  private createOperatorsFor<A extends Idle>(a: A): IOperators {
+    return {
+      less: <B>(b: B) => {
+        this.validator.validate('less', { a, b })
+        return a < b
+      },
+      lessOrEqual: <B>(b: B) => {
+        this.validator.validate('lessOrEqual', { a, b })
+        return a <= b
+      },
+      greater: <B>(b: B) => {
+        this.validator.validate('greater', { a, b })
+        return a > b
+      },
+      greaterOrEqual: <B>(b: B) => {
+        this.validator.validate('greaterOrEqual', { a, b })
+        return a >= b
+      },
+      equal: <B>(b: B) => {
+        this.validator.validate('equal', { a, b })
+        return a === b
+      },
+      diff: <B>(b: B) => {
+        this.validator.validate('diff', { a, b })
+        return a !== b
+      },
+      in: <B>(b: B) => {
+        this.validator.validate('in', { a: b, b: a })
+        return (b as Idle).includes(a)
+      },
+      notIn: <B>(b: B) => {
+        this.validator.validate('notIn', { a: b, b: a })
+        return !(b as Idle).includes(a)
+      },
+    }
   }
 
   /**
    * @method subscribe
-   * @desc Register rules.
+   *
+   * @desc Enter the rules for the informed metadata.
+   *
    * @param rules
-   * @param facts
    */
-  public subscribe<M>(
-    rules: IEngine.IRules<M>,
-    facts: IEngine.IFacts<M>,
-  ): this {
-    this.rules = rules(facts)
+  public subscribe(rules: IRules<T>): this {
+    const attributes: Idle[] = Object.keys(this.metadata)
 
-    Object.keys(this.rules).forEach(attribute => {
-      const { condition, event } = this.rules[attribute]
+    attributes.forEach((attribute: keyof T) => {
+      const value = this.metadata[attribute]
 
       this.context[attribute] = {
-        method: condition.method,
-        status: !condition.result ? 'success' : 'failed',
-        values: { sended: condition.values.a, expected: condition.values.b },
-        event,
+        $value: value,
+        ...this.createOperatorsFor(value),
       }
     })
 
-    return this
-  }
-
-  /**
-   * @method validate
-   * @desc Perform operator validation based on values.
-   * @param operator
-   * @param values
-   */
-  public validate(
-    operator: IOperator.IOptions,
-    values: Record<'a' | 'b', Idle>,
-  ): this {
-    validateValuesPerOperator(operator, values)
+    this.rules = rules(this.context, new Event())
 
     return this
   }
 
   /**
    * @method run
-   * @desc Run rule tests.
+   *
+   * @desc Run the test stack for the defined rules.
    */
-  public run(): this {
-    Object.keys(this.context).forEach(attribute => {
-      const { event, ...context } = this.context[attribute]
+  public run(): boolean {
+    const attributes: Idle[] = Object.keys(this.context)
 
-      this.validate(context.method, {
-        a: context.values.sended,
-        b: context.values.expected,
-      })
-
-      if (context.status === 'failed' && typeof event === 'function') {
-        try {
-          event()
-        } catch (error) {
-          throw { ...context, error }
-        }
+    attributes.forEach((attribute: keyof T) => {
+      if (this.rules[attribute] === undefined) {
+        throw new Exception(
+          Engine.name,
+          `No rules defined for the "${attribute}" attribute.`,
+        )
       }
     })
 
-    this.updateStats()
-
-    return this
+    return Object.values(this.rules).every(result => !!result)
   }
 }

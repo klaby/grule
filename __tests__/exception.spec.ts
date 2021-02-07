@@ -1,4 +1,4 @@
-import { Exception } from '../src/exception'
+import { Exception } from '../lib/exception'
 
 describe('Exception', () => {
   it('should return an Foo Exeption error', () => {

@@ -1,91 +1,51 @@
 import { IDataTypes } from 'chork'
 
 export type Idle = unknown | any
-export namespace IOperator {
-  export type ILogic =
-    | '$less'
-    | '$lessOrEqual'
-    | '$greater'
-    | '$greaterOrEqual'
-    | '$equal'
-    | '$diff'
 
-  export type IModifier = '$in' | '$notIn'
-  export type IOptions = ILogic | IModifier
-  export type IDataSchemaKey =
-    | '$less:$lessOrEqual:$greater:$greaterOrEqual'
-    | '$equal:$diff'
-    | '$in:$notIn'
-
-  export type ILess = number
-  export type IGreater = number
-  export type IEqual = number | boolean | string
-  export type In = string | [] | Record<string, any>
-
-  export type IBuilder = {
-    result: boolean
-    method: IOptions
-    values: { a: Idle; b: Idle }
-  }
-
-  export type IMethodsLogic = {
-    [k in ILogic]: <A>(a: A, b: A) => IBuilder
-  }
-
-  export type IMethodsModifier = {
-    [k in IModifier]: <A, B>(a: A, b: B) => IBuilder
-  }
-
-  export type IMethods = IMethodsLogic & IMethodsModifier
+export interface IEvent {
+  when(result: boolean): this
+  then(event: Function): boolean
 }
 
-export namespace IDataType {
-  export type ISchemaCheck = {
-    checked: boolean
-    equals: boolean
-    types: Record<'a' | 'b', IDataTypes>
-  }
+export type ILess = number
+export type IGreater = number
+export type IEqual = number | boolean | string
+export type In = string | Idle[]
 
-  export type ISchemaOptions = {
-    key: IOperator.IDataSchemaKey
-    types: IDataTypes[]
-  }
+export type IOperatorsSchemaKeys =
+  | 'less:lessOrEqual:greater:greaterOrEqual'
+  | 'equal:diff'
+  | 'in:notIn'
 
-  export type IOperator = Record<IOperator.IDataSchemaKey, IDataTypes[]>
+export type IOperatorsSchema = {
+  key: IOperatorsSchemaKeys
+  types: IDataTypes[]
 }
 
-export namespace IEvents {
-  export type IOptions = '$throw' | '$done'
-
-  export type ISchema = {
-    condition: IOperator.IBuilder
-    event?: Function
-  }
-
-  export type IMethods = {
-    $throw: (message: string) => Function
-    $when: (condition: IOperator.IBuilder, event?: Function) => ISchema
-  }
+export type IOperators = {
+  less(value: ILess): boolean
+  lessOrEqual(value: ILess): boolean
+  greater(value: IGreater): boolean
+  greaterOrEqual(value: IGreater): boolean
+  equal(value: IEqual): boolean
+  diff(value: IEqual): boolean
+  in(value: In): boolean
+  notIn(value: In): boolean
 }
 
-export namespace IEngine {
-  export type IRulesSchema<T> = Record<keyof T, IEvents.ISchema>
+export type IOperatorsList = keyof IOperators
 
-  export type IRules<T extends Idle> = (metadata: T) => IRulesSchema<T>
+export type IContext<T> = Record<keyof T, IOperators & Record<'$value', Idle>>
 
-  export type IFacts<T extends Idle> = T
+export type IRules<T> = (
+  attributes: IContext<T>,
+  events: Pick<IEvent, 'when'>,
+) => Record<keyof T, boolean>
 
-  export type IContextStatus = 'success' | 'failed'
+export type IRulesContext<T> = Record<keyof T, boolean>
 
-  export type IContext<R> = {
-    [k in keyof R]: {
-      status: IContextStatus
-      method: IOperator.IOptions
-      values: {
-        expected: Idle
-        sended: Idle
-      }
-      event?: Function
-    }
-  }
+export type IDataTypesSchema = {
+  checked: boolean
+  equals: boolean
+  types: Record<'a' | 'b', IDataTypes>
 }
