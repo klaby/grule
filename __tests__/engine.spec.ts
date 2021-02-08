@@ -14,7 +14,7 @@ describe('Engine', () => {
     name: 'foo',
   }
 
-  it('should return true for validation', () => {
+  it('should return true for validation', async () => {
     engine = new Engine(metadata)
 
     const rules: IRules<IUser> = ({ id, name }) => ({
@@ -22,10 +22,10 @@ describe('Engine', () => {
       name: name.equal('foo'),
     })
 
-    expect(engine.subscribe(rules).run()).toBe(true)
+    expect(engine.run(rules)).resolves.toBe(true)
   })
 
-  it('should return true for validation', () => {
+  it('should return true for validation', async () => {
     engine = new Engine(metadata)
 
     const rules: IRules<IUser> = ({ id, name }) => ({
@@ -33,10 +33,10 @@ describe('Engine', () => {
       name: name.in(['foo']),
     })
 
-    expect(engine.subscribe(rules).run()).toBe(true)
+    expect(engine.run(rules)).resolves.toBe(true)
   })
 
-  it('should return true for validation', () => {
+  it('should return true for validation', async () => {
     engine = new Engine(metadata)
 
     const rules: IRules<IUser> = ({ id, name }) => ({
@@ -44,10 +44,10 @@ describe('Engine', () => {
       name: name.notIn(['bar']),
     })
 
-    expect(engine.subscribe(rules).run()).toBe(true)
+    expect(engine.run(rules)).resolves.toBe(true)
   })
 
-  it('should return false for validation', () => {
+  it('should return false for validation', async () => {
     engine = new Engine(metadata)
 
     const rules: IRules<IUser> = ({ id, name }) => ({
@@ -55,10 +55,10 @@ describe('Engine', () => {
       name: name.in(['bar']),
     })
 
-    expect(engine.subscribe(rules).run()).toBe(false)
+    expect(engine.run(rules)).resolves.toBe(false)
   })
 
-  it('should return false for validation', () => {
+  it('should return false for validation', async () => {
     engine = new Engine(metadata)
 
     const rules: IRules<IUser> = ({ id, name }) => ({
@@ -66,10 +66,10 @@ describe('Engine', () => {
       name: name.in(['bar']),
     })
 
-    expect(engine.subscribe(rules).run()).toBe(false)
+    expect(engine.run(rules)).resolves.toBe(false)
   })
 
-  it('should return false for validation', () => {
+  it('should return false for validation', async () => {
     engine = new Engine(metadata)
 
     const rules: IRules<IUser> = ({ id, name }) => ({
@@ -77,19 +77,44 @@ describe('Engine', () => {
       name: name.diff('foo'),
     })
 
-    expect(engine.subscribe(rules).run()).toBe(false)
+    expect(engine.run(rules)).resolves.toBe(false)
   })
 
-  it('should return error for undefined rules', () => {
+  it('should perform the equal function and return true', async () => {
     engine = new Engine(metadata)
 
-    const rules: IRules<IUser> = ({ id, name }) =>
-      ({
-        id: id.equal(50),
-      } as any)
+    const rules: IRules<IUser> = ({ id, name }) => ({
+      id: id.greaterOrEqual(50),
+      name: name.eval('equal', 'foo'),
+    })
 
-    expect(() => engine.subscribe(rules).run()).toThrow(
-      'No rules defined for the "name" attribute.',
+    expect(engine.run(rules)).resolves.toBe(true)
+  })
+
+  it('should return error for undefined metadata', async () => {
+    engine = new Engine({} as any)
+
+    const rules: IRules<IUser> = ({ id, name }) => ({
+      id: id.greaterOrEqual(50),
+      name: name.eval('equal', 'foo'),
+    })
+
+    expect(engine.run(rules)).rejects.toThrow(
+      'No attributes defined in metadata.',
+    )
+  })
+
+  it('should return error for a rule that has no metadata defined', async () => {
+    engine = new Engine(metadata)
+
+    const rules: IRules<IUser> = ({ id, name }) => ({
+      id: id.greaterOrEqual(50),
+      name: name.eval('equal', 'foo'),
+      foo: id.less(20),
+    })
+
+    expect(engine.run(rules)).rejects.toThrow(
+      'There is no value defined in the metadata for the rule "foo".',
     )
   })
 })

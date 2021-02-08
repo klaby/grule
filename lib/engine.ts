@@ -1,17 +1,10 @@
-import {
-  IContext,
-  IRules,
-  Idle,
-  IRulesContext,
-  IOperators,
-} from '../src/interfaces'
+import { IContext, IRules, Idle, IOperatorsList } from '../src/interfaces'
 import { Validator } from './validator'
 import { Event } from './event'
-import { Exception } from './exception'
+import { EngineError } from './exception'
 
 export class Engine<T> {
   private metadata: T
-  private rules: IRulesContext<T> = {} as IRulesContext<T>
   private context: IContext<T> = {} as IContext<T>
   private validator: Validator
 
@@ -21,14 +14,17 @@ export class Engine<T> {
   }
 
   /**
-   * @method createOperatorsFor
+   * @method createContextfor
    *
    * @desc Create a schema of operators for each mapped attribute.
    *
    * @param a
    */
-  private createOperatorsFor<A extends Idle>(a: A): IOperators {
-    return {
+  private createContextfor<A extends Idle>(attribute: keyof T, a: A): boolean {
+    const context = {
+      eval: <B>(operator: Exclude<IOperatorsList, 'eval'>, b: B): boolean => {
+        return this.context[attribute][operator](b as Idle)
+      },
       less: <B>(b: B) => {
         this.validator.validate('less', { a, b })
         return a < b
@@ -54,14 +50,18 @@ export class Engine<T> {
         return a !== b
       },
       in: <B>(b: B) => {
-        this.validator.validate('in', { a: b, b: a })
+        this.validator.validate('in', { a, b })
         return (b as Idle).includes(a)
       },
       notIn: <B>(b: B) => {
-        this.validator.validate('notIn', { a: b, b: a })
+        this.validator.validate('notIn', { a, b })
         return !(b as Idle).includes(a)
       },
     }
+
+    this.context[attribute] = { ...context, $value: a }
+
+    return true
   }
 
   /**
@@ -71,40 +71,44 @@ export class Engine<T> {
    *
    * @param rules
    */
-  public subscribe(rules: IRules<T>): this {
-    const attributes: Idle[] = Object.keys(this.metadata)
+  private async subscribe(rules: IRules<T>): Promise<Idle[]> {
+    const attributes = Object.keys(this.metadata) as Idle[]
+
+    if (!attributes.length) {
+      throw new EngineError('No attributes defined in metadata.')
+    }
 
     attributes.forEach((attribute: keyof T) => {
       const value = this.metadata[attribute]
+      this.createContextfor(attribute, value)
+    })
 
-      this.context[attribute] = {
-        $value: value,
-        ...this.createOperatorsFor(value),
+    const wrapedRules = rules(this.context, new Event())
+    const context = Object.keys(wrapedRules)
+
+    context.forEach(attribute => {
+      if (!attributes.includes(attribute)) {
+        throw new EngineError(
+          `There is no value defined in the metadata for the rule "${attribute}".`,
+        )
       }
     })
 
-    this.rules = rules(this.context, new Event())
-
-    return this
+    return await Promise.all(Object.values(wrapedRules))
   }
 
   /**
    * @method run
    *
    * @desc Run the test stack for the defined rules.
+   *
+   * @param rules
    */
-  public run(): boolean {
-    const attributes: Idle[] = Object.keys(this.context)
+  public async run(rules: IRules<T>): Promise<boolean> {
+    const result = await this.subscribe(rules)
 
-    attributes.forEach((attribute: keyof T) => {
-      if (this.rules[attribute] === undefined) {
-        throw new Exception(
-          Engine.name,
-          `No rules defined for the "${attribute}" attribute.`,
-        )
-      }
-    })
-
-    return Object.values(this.rules).every(result => !!result)
+    return Object.values(result).every(status =>
+      [undefined, true].includes(status),
+    )
   }
 }

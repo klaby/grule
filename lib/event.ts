@@ -1,10 +1,5 @@
-import { IEvent } from '../src/interfaces'
-
-export class Event implements IEvent {
-  status: boolean
-
+export class Event {
   constructor() {
-    this.status = true
     this.when = this.when.bind(this)
   }
 
@@ -15,23 +10,7 @@ export class Event implements IEvent {
    *
    * @param result
    */
-  when(result: boolean): this {
-    this.status = result
-    return this
-  }
-
-  /**
-   * @method when
-   *
-   * @desc So do something.
-   *
-   * @param event
-   */
-  then(event: Function): boolean {
-    if (this.status) {
-      event(this.status)
-    }
-
-    return this.status
+  when(result: boolean): Promise<boolean> {
+    return Promise.resolve(result)
   }
 }

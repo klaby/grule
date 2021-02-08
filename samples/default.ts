@@ -15,4 +15,4 @@ const rules: IRules<IUser> = ({ id, gender }, { when }) => ({
   gender: gender.in(['female']),
 })
 
-engine.subscribe(rules).run()
+engine.run(rules)

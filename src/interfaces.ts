@@ -1,12 +1,10 @@
 import { IDataTypes } from 'chork'
 
-export type Idle = unknown | any
-
 export interface IEvent {
-  when(result: boolean): this
-  then(event: Function): boolean
+  when(result: boolean): Promise<boolean>
 }
 
+export type Idle = unknown | any
 export type ILess = number
 export type IGreater = number
 export type IEqual = number | boolean | string
@@ -23,6 +21,7 @@ export type IOperatorsSchema = {
 }
 
 export type IOperators = {
+  eval(operator: Exclude<IOperatorsList, 'eval'>, value: Idle): boolean
   less(value: ILess): boolean
   lessOrEqual(value: ILess): boolean
   greater(value: IGreater): boolean
@@ -39,8 +38,8 @@ export type IContext<T> = Record<keyof T, IOperators & Record<'$value', Idle>>
 
 export type IRules<T> = (
   attributes: IContext<T>,
-  events: Pick<IEvent, 'when'>,
-) => Record<keyof T, boolean>
+  events: IEvent,
+) => Record<keyof T, Promise<boolean> | boolean>
 
 export type IRulesContext<T> = Record<keyof T, boolean>
 
@@ -49,3 +48,7 @@ export type IDataTypesSchema = {
   equals: boolean
   types: Record<'a' | 'b', IDataTypes>
 }
+
+export type ExceptionMetadata = Record<string, Idle>
+
+export type IRuleAttributes = Record<'context' | 'result', Idle[]>

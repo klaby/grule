@@ -1,18 +1,22 @@
 import { Idle, IOperatorsList } from '../src/interfaces'
 import { OPERATORS, OPERATORS_DATATYPES } from '../src/constants'
-import { Exception } from './exception'
+import { ValidatorError } from './exception'
 import { getDataTypes, typeCheck } from '../src/helpers'
 
 export class Validator {
   /**
-   * @method error
+   * @method isValidOperator
    *
-   * @desc Launch error for validation.
+   * @desc Checks whether the operator is valid.
    *
-   * @param message
+   * @param operator
    */
-  private error(message: string): never {
-    throw new Exception(Validator.name, message)
+  public operator(operator: IOperatorsList): boolean {
+    if (!OPERATORS.includes(operator)) {
+      throw new ValidatorError(`Allowed operators "${OPERATORS}".`)
+    }
+
+    return true
   }
 
   /**
@@ -30,14 +34,12 @@ export class Validator {
     const schema = getDataTypes(operator)
     const result = typeCheck(schema.types, values)
 
-    if (!OPERATORS.includes(operator)) {
-      this.error(`Allowed operators "${OPERATORS}".`)
-    }
+    this.operator(operator)
 
     switch (schema.key) {
       case 'less:lessOrEqual:greater:greaterOrEqual':
         if (!result.checked) {
-          this.error(
+          throw new ValidatorError(
             `Operator "${operator}" expects data type "${schema.types}".`,
           )
         }
@@ -47,7 +49,7 @@ export class Validator {
         const blacklist = ['array', 'object']
 
         if (Object.values(result.types).some(v => blacklist.includes(v))) {
-          this.error(
+          throw new ValidatorError(
             `Operator "${operator}" expects data type "${schema.types}".`,
           )
         }
@@ -59,12 +61,12 @@ export class Validator {
 
         if (result.checked) {
           if (result.equals && a !== 'string' && b !== 'string') {
-            this.error(
+            throw new ValidatorError(
               `Operator "${operator}" sparks one argument of type "${schema.types}" and another with type "${typesAccepted}".`,
             )
           }
         } else {
-          this.error(
+          throw new ValidatorError(
             `Operator "${operator}" expects data type "${schema.types}".`,
           )
         }
