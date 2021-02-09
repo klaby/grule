@@ -1,20 +1,16 @@
-import { Engine } from '../lib/engine'
-import { IRules } from '../src/interfaces'
+import { Grule } from '../lib/grule'
 
 type IUser = {
   id: number
   gender: 'male' | 'female'
 }
 
-const engine = new Engine<IUser>({ id: 1, gender: 'male' })
-
-const rules: IRules<IUser> = ({ id, gender }, { when }) => ({
-  id: when(id.greater(1)).then(result => {
-    if (result) throw new Error('Validation failed to "id".')
-
-    return result
+const grule = new Grule<IUser>({ id: 1, gender: 'male' }).run(
+  ({ id, gender }, { when }) => ({
+    id: when(id.notIn([1, 2, 3])).then(result => {
+      if (result) throw new Error('Not allowed for user.')
+      return result
+    }),
+    gender: gender.equal('female'),
   }),
-  gender: gender.in(['female']),
-})
-
-engine.run(rules)
+)
