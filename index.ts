@@ -1,4 +1,4 @@
-export * from './lib/engine'
+export * from './lib/grule'
 export * from './lib/exception'
 export * from './lib/validator'
 

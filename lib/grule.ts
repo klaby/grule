@@ -4,29 +4,29 @@ import { EngineError } from './exception'
 import { Operator } from './operator'
 
 export class Grule<T> {
-  private metadata: T
+  private facts: T
   private context: IContext<T> = {} as IContext<T>
 
-  constructor(metadata: T) {
-    this.metadata = metadata
+  constructor(facts: T) {
+    this.facts = facts
   }
 
   /**
    * @method subscribe
    *
-   * @desc Enter the rules for the informed metadata.
+   * @desc Enter the rules for the informed facts.
    *
    * @param rules
    */
   private async subscribe(rules: IRules<T>): Promise<Idle[]> {
-    const attributes = Object.keys(this.metadata) as Idle[]
+    const attributes = Object.keys(this.facts) as Idle[]
 
     if (!attributes.length) {
-      throw new EngineError('No attributes defined in metadata.')
+      throw new EngineError('No attributes defined in facts.')
     }
 
     attributes.forEach((attribute: keyof T) => {
-      this.context[attribute] = new Operator(this.metadata[attribute])
+      this.context[attribute] = new Operator(this.facts[attribute])
     })
 
     const wrapedRules = rules(this.context, new Event())
@@ -35,7 +35,7 @@ export class Grule<T> {
     context.forEach(attribute => {
       if (!attributes.includes(attribute)) {
         throw new EngineError(
-          `There is no value defined in the metadata for the rule "${attribute}".`,
+          `There is no value defined in the facts for the rule "${attribute}".`,
         )
       }
     })

@@ -99,9 +99,7 @@ describe('Grule', () => {
       name: name.eval('equal', 'foo'),
     })
 
-    expect(engine.run(rules)).rejects.toThrow(
-      'No attributes defined in metadata.',
-    )
+    expect(engine.run(rules)).rejects.toThrow('No attributes defined in facts.')
   })
 
   it('should return error for a rule that has no metadata defined', async () => {
@@ -114,7 +112,7 @@ describe('Grule', () => {
     })
 
     expect(engine.run(rules)).rejects.toThrow(
-      'There is no value defined in the metadata for the rule "foo".',
+      'There is no value defined in the facts for the rule "foo".',
     )
   })
 
