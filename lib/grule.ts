@@ -1,6 +1,6 @@
 import { IContext, IRules, Idle } from '../src/interfaces'
 import { Event } from './event'
-import { EngineError } from './exception'
+import { GruleError } from './exception'
 import { Operator } from './operator'
 
 export class Grule<T> {
@@ -22,7 +22,7 @@ export class Grule<T> {
     const attributes = Object.keys(this.facts) as Idle[]
 
     if (!attributes.length) {
-      throw new EngineError('No attributes defined in facts.')
+      throw new GruleError('No attributes defined in facts.')
     }
 
     attributes.forEach((attribute: keyof T) => {
@@ -34,7 +34,7 @@ export class Grule<T> {
 
     context.forEach(attribute => {
       if (!attributes.includes(attribute)) {
-        throw new EngineError(
+        throw new GruleError(
           `There is no value defined in the facts for the rule "${attribute}".`,
         )
       }

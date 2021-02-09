@@ -8,14 +8,8 @@ class Exception extends Error {
   }
 }
 
-export class EngineError extends Exception {
+export class GruleError extends Exception {
   constructor(message: string, metadata?: ExceptionMetadata) {
-    super('EngineError', message, metadata)
-  }
-}
-
-export class ValidatorError extends Exception {
-  constructor(message: string, metadata?: ExceptionMetadata) {
-    super('ValidatorError', message, metadata)
+    super('GruleError', message, metadata)
   }
 }
