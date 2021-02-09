@@ -1,9 +1,23 @@
-import { Idle, IOperatorsList } from '../src/interfaces'
+import { IArgs, IOperatorsList } from '../src/interfaces'
 import { OPERATORS, OPERATORS_DATATYPES } from '../src/constants'
 import { ValidatorError } from './exception'
 import { getDataTypes, typeCheck } from '../src/helpers'
+import { IDataTypes } from 'chork'
 
 export class Validator {
+  /**
+   * @method parseTypes
+   *
+   * @desc Parse types to string.
+   *
+   * ** string | array **
+   *
+   * @param types
+   */
+  private parseTypes(types: IDataTypes[]): string {
+    return `(${types.toString().replace(/,/g, ' | ')})`
+  }
+
   /**
    * @method isValidOperator
    *
@@ -25,14 +39,11 @@ export class Validator {
    * @desc Perform data type tests against operators.
    *
    * @param operator
-   * @param values
+   * @param args
    */
-  public validate(
-    operator: IOperatorsList,
-    values: Record<'a' | 'b', Idle>,
-  ): boolean {
+  public validate(operator: IOperatorsList, args: IArgs): boolean {
     const schema = getDataTypes(operator)
-    const result = typeCheck(schema.types, values)
+    const result = typeCheck(schema.types, args)
 
     this.operator(operator)
 
@@ -40,7 +51,9 @@ export class Validator {
       case 'less:lessOrEqual:greater:greaterOrEqual':
         if (!result.checked) {
           throw new ValidatorError(
-            `Operator "${operator}" expects data type "${schema.types}".`,
+            `Operator "${operator}" expects data type: ${this.parseTypes(
+              schema.types,
+            )}.`,
           )
         }
 
@@ -50,19 +63,25 @@ export class Validator {
 
         if (Object.values(result.types).some(v => blacklist.includes(v))) {
           throw new ValidatorError(
-            `Operator "${operator}" expects data type "${schema.types}".`,
+            `Operator "${operator}" expects data type: ${this.parseTypes(
+              schema.types,
+            )}.`,
           )
         }
 
         return true
       case 'in:notIn':
-        const typesAccepted = OPERATORS_DATATYPES['equal:diff']
-        const { a, b } = result.types
+        const { arg0, arg1 } = result.types
 
         if (result.checked) {
-          if (result.equals && a !== 'string' && b !== 'string') {
+          if (result.equals && arg0 !== 'string' && arg1 !== 'string') {
             throw new ValidatorError(
-              `Operator "${operator}" sparks one argument of type "${schema.types}" and another with type "${typesAccepted}".`,
+              `Operator "${operator}" accepts: arg0 type ${this.parseTypes([
+                'array',
+                'string',
+              ])} and arg1 type ${this.parseTypes(
+                OPERATORS_DATATYPES['equal:diff'],
+              )}".`,
             )
           }
         } else {

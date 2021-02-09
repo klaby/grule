@@ -117,4 +117,14 @@ describe('Engine', () => {
       'There is no value defined in the metadata for the rule "foo".',
     )
   })
+
+  it('should return the value 1 for the attribute $value.', async () => {
+    new Engine({ id: 1 }).run(({ id }) => {
+      expect(id.$value).toBe(1)
+
+      return {
+        id: id.greaterOrEqual(50),
+      }
+    })
+  })
 })

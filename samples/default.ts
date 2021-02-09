@@ -9,8 +9,10 @@ type IUser = {
 const engine = new Engine<IUser>({ id: 1, gender: 'male' })
 
 const rules: IRules<IUser> = ({ id, gender }, { when }) => ({
-  id: when(id.greater(1)).then(() => {
-    throw new Error('Validation failed to "id".')
+  id: when(id.greater(1)).then(result => {
+    if (result) throw new Error('Validation failed to "id".')
+
+    return result
   }),
   gender: gender.in(['female']),
 })

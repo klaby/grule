@@ -4,6 +4,7 @@ import {
   IOperatorsSchema,
   IOperatorsSchemaKeys,
   IOperatorsList,
+  IArgs,
 } from '../src/interfaces'
 import { OPERATORS_DATATYPES } from '../src/constants'
 
@@ -17,13 +18,13 @@ import { OPERATORS_DATATYPES } from '../src/constants'
  */
 export const typeCheck = <V>(
   options: IDataTypes[],
-  values: Record<'a' | 'b', V>,
+  args: IArgs,
 ): IDataTypesSchema => {
-  const types: Record<'a' | 'b', IDataTypes> = checkAll(values)
+  const types: IArgs = checkAll(args)
   const checked = Object.values(types).every(
     type => options && options.includes(type),
   )
-  const equals = types.a === types.b
+  const equals = types.arg0 === types.arg1
 
   return { checked, equals, types }
 }

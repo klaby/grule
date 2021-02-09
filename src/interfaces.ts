@@ -36,6 +36,12 @@ export type IOperatorsList = keyof IOperators
 
 export type IContext<T> = Record<keyof T, IOperators & Record<'$value', Idle>>
 
+export type ExceptionMetadata = Record<string, Idle>
+
+export type IRuleAttributes = Record<'context' | 'result', Idle[]>
+
+export type IArgs = Record<'arg0' | 'arg1', Idle>
+
 export type IRules<T> = (
   attributes: IContext<T>,
   events: IEvent,
@@ -46,9 +52,5 @@ export type IRulesContext<T> = Record<keyof T, boolean>
 export type IDataTypesSchema = {
   checked: boolean
   equals: boolean
-  types: Record<'a' | 'b', IDataTypes>
+  types: IArgs
 }
-
-export type ExceptionMetadata = Record<string, Idle>
-
-export type IRuleAttributes = Record<'context' | 'result', Idle[]>
