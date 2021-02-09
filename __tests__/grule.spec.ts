@@ -1,13 +1,13 @@
 import { IRules } from '../src/interfaces'
-import { Engine } from '../lib/engine'
+import { Grule } from '../lib/grule'
 
-describe('Engine', () => {
+describe('Grule', () => {
   type IUser = {
     id: number
     name: string
   }
 
-  let engine: Engine<IUser>
+  let engine: Grule<IUser>
 
   const metadata: IUser = {
     id: 50,
@@ -15,7 +15,7 @@ describe('Engine', () => {
   }
 
   it('should return true for validation', async () => {
-    engine = new Engine(metadata)
+    engine = new Grule(metadata)
 
     const rules: IRules<IUser> = ({ id, name }) => ({
       id: id.equal(50),
@@ -26,7 +26,7 @@ describe('Engine', () => {
   })
 
   it('should return true for validation', async () => {
-    engine = new Engine(metadata)
+    engine = new Grule(metadata)
 
     const rules: IRules<IUser> = ({ id, name }) => ({
       id: id.less(51),
@@ -37,7 +37,7 @@ describe('Engine', () => {
   })
 
   it('should return true for validation', async () => {
-    engine = new Engine(metadata)
+    engine = new Grule(metadata)
 
     const rules: IRules<IUser> = ({ id, name }) => ({
       id: id.lessOrEqual(50),
@@ -48,7 +48,7 @@ describe('Engine', () => {
   })
 
   it('should return false for validation', async () => {
-    engine = new Engine(metadata)
+    engine = new Grule(metadata)
 
     const rules: IRules<IUser> = ({ id, name }) => ({
       id: id.greater(50),
@@ -59,7 +59,7 @@ describe('Engine', () => {
   })
 
   it('should return false for validation', async () => {
-    engine = new Engine(metadata)
+    engine = new Grule(metadata)
 
     const rules: IRules<IUser> = ({ id, name }) => ({
       id: id.greater(50),
@@ -70,7 +70,7 @@ describe('Engine', () => {
   })
 
   it('should return false for validation', async () => {
-    engine = new Engine(metadata)
+    engine = new Grule(metadata)
 
     const rules: IRules<IUser> = ({ id, name }) => ({
       id: id.greaterOrEqual(50),
@@ -81,7 +81,7 @@ describe('Engine', () => {
   })
 
   it('should perform the equal function and return true', async () => {
-    engine = new Engine(metadata)
+    engine = new Grule(metadata)
 
     const rules: IRules<IUser> = ({ id, name }) => ({
       id: id.greaterOrEqual(50),
@@ -92,7 +92,7 @@ describe('Engine', () => {
   })
 
   it('should return error for undefined metadata', async () => {
-    engine = new Engine({} as any)
+    engine = new Grule({} as any)
 
     const rules: IRules<IUser> = ({ id, name }) => ({
       id: id.greaterOrEqual(50),
@@ -105,7 +105,7 @@ describe('Engine', () => {
   })
 
   it('should return error for a rule that has no metadata defined', async () => {
-    engine = new Engine(metadata)
+    engine = new Grule(metadata)
 
     const rules: IRules<IUser> = ({ id, name }) => ({
       id: id.greaterOrEqual(50),
@@ -119,7 +119,7 @@ describe('Engine', () => {
   })
 
   it('should return the value 1 for the attribute $value.', async () => {
-    new Engine({ id: 1 }).run(({ id }) => {
+    new Grule({ id: 1 }).run(({ id }) => {
       expect(id.$value).toBe(1)
 
       return {

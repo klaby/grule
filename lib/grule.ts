@@ -3,7 +3,7 @@ import { Event } from './event'
 import { EngineError } from './exception'
 import { Operator } from './operator'
 
-export class Engine<T> {
+export class Grule<T> {
   private metadata: T
   private context: IContext<T> = {} as IContext<T>
 
