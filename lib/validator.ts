@@ -42,10 +42,10 @@ export class Validator {
    * @param args
    */
   public validate(operator: IOperatorsList, args: IArgs): boolean {
+    this.operator(operator)
+
     const schema = getDataTypes(operator)
     const result = typeCheck(schema.types, args)
-
-    this.operator(operator)
 
     switch (schema.key) {
       case 'less:lessOrEqual:greater:greaterOrEqual':
