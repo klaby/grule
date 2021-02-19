@@ -19,6 +19,7 @@
     "url": "https://github.com/hiukky/grule"
   },
   "scripts": {
+    "postinstall": "husky install",
     "prebuild": "rimraf dist",
     "build": "esbuild index.ts --outfile=dist/index.js --bundle --platform=node --minify",
     "dev": "tsnd --respawn index.ts",
@@ -38,6 +39,8 @@
     "@types/type-check": "^0.3.27",
     "@typescript-eslint/eslint-plugin": "^4.15.1",
     "@typescript-eslint/parser": "^4.15.1",
+    "commitizen": "^4.2.3",
+    "cz-conventional-changelog": "3.3.0",
     "esbuild": "^0.8.49",
     "eslint": "^7.20.0",
     "eslint-config-airbnb-base": "^14.2.1",
@@ -74,5 +77,10 @@
     "policy",
     "requirement",
     "validation"
-  ]
+  ],
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
 }
