@@ -40,7 +40,7 @@ export class Grule<T> {
       }
     })
 
-    return await Promise.all(Object.values(wrapedRules))
+    return Promise.all(Object.values(wrapedRules))
   }
 
   /**
