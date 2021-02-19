@@ -1,8 +1,8 @@
+import { IDataTypes } from 'chork'
 import { IArgs, IOperatorsList } from '../src/interfaces'
 import { OPERATORS, OPERATORS_DATATYPES } from '../src/constants'
 import { GruleError } from './exception'
 import { getDataTypes, typeCheck } from '../src/helpers'
-import { IDataTypes } from 'chork'
 
 export class Validator {
   /**
@@ -44,12 +44,13 @@ export class Validator {
   public validate(operator: IOperatorsList, args: IArgs): boolean {
     this.operator(operator)
 
+    const blacklist = ['array', 'object']
     const schema = getDataTypes(operator)
-    const result = typeCheck(schema.types, args)
+    const { checked, equals, types } = typeCheck(schema.types, args)
 
     switch (schema.key) {
       case 'less:lessOrEqual:greater:greaterOrEqual':
-        if (!result.checked) {
+        if (!checked) {
           throw new GruleError(
             `Operator "${operator}" expects data type: ${this.parseTypes(
               schema.types,
@@ -59,9 +60,7 @@ export class Validator {
 
         return true
       case 'equal:diff':
-        const blacklist = ['array', 'object']
-
-        if (Object.values(result.types).some(v => blacklist.includes(v))) {
+        if (Object.values(types).some(v => blacklist.includes(v))) {
           throw new GruleError(
             `Operator "${operator}" expects data type: ${this.parseTypes(
               schema.types,
@@ -71,10 +70,8 @@ export class Validator {
 
         return true
       case 'in:notIn':
-        const { arg0, arg1 } = result.types
-
-        if (result.checked) {
-          if (result.equals && arg0 !== 'string' && arg1 !== 'string') {
+        if (checked) {
+          if (equals && types.arg0 !== 'string' && types.arg1 !== 'string') {
             throw new GruleError(
               `Operator "${operator}" accepts: arg0 type ${this.parseTypes([
                 'array',
@@ -91,6 +88,9 @@ export class Validator {
         }
 
         return true
+
+      default:
+        return false
     }
   }
 }

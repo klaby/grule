@@ -21,7 +21,7 @@ export type IOperatorsSchema = {
 }
 
 export type IOperators = {
-  eval(operator: Exclude<IOperatorsList, 'eval'>, value: Idle): boolean
+  eval(operator: Exclude<keyof IOperators, 'eval'>, value: Idle): boolean
   less(value: ILess): boolean
   lessOrEqual(value: ILess): boolean
   greater(value: IGreater): boolean
