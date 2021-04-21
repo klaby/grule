@@ -1,6 +1,6 @@
 {
   "name": "grule",
-  "version": "0.1.0-alpha.9",
+  "version": "0.1.0",
   "description": "A simple and powerful mechanism for validating rules in JSON.",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -19,6 +19,7 @@
     "url": "https://github.com/hiukky/grule"
   },
   "scripts": {
+    "cm": "cz",
     "postinstall": "husky install",
     "prebuild": "rimraf dist",
     "build": "esbuild index.ts --outfile=dist/index.js --bundle --platform=node --minify",
@@ -28,8 +29,7 @@
     "lint:fix": "yarn lint --fix",
     "test": "jest",
     "test:cov": "jest --coverage",
-    "format": "prettier --write \"**/*.ts\"",
-    "semantic-release": "semantic-release"
+    "format": "prettier --write \"**/*.ts\""
   },
   "license": "MIT",
   "devDependencies": {
