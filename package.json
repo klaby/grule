@@ -1,6 +1,6 @@
 {
   "name": "grule",
-  "version": "1.0.0-develop.1",
+  "version": "0.1.0",
   "description": "A simple and powerful mechanism for validating rules in JSON.",
   "main": "dist/index.js",
   "module": "dist/index.js",
